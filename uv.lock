@@ -2530,14 +2530,14 @@ dependencies = [
 
 [package.metadata]
 requires-dist = [
-    { name = "coqui-tts", specifier = ">=0.26.2" },
+    { name = "coqui-tts", specifier = "==0.26.2" },
     { name = "markupsafe", specifier = "==3.0.2", index = "https://pypi.org/simple" },
     { name = "pip", specifier = "==25.1.1" },
-    { name = "requests", specifier = ">=2.32.4", index = "https://pypi.org/simple" },
-    { name = "torch", specifier = ">=2.7.1", index = "https://download.pytorch.org/whl/cu126" },
-    { name = "torchaudio", specifier = ">=2.7.1" },
-    { name = "torchvision", specifier = ">=0.22.1" },
-    { name = "tqdm", specifier = ">=4.67.1", index = "https://pypi.org/simple" },
+    { name = "requests", specifier = "==2.32.4", index = "https://pypi.org/simple" },
+    { name = "torch", specifier = "==2.7.1", index = "https://download.pytorch.org/whl/cu126" },
+    { name = "torchaudio", specifier = "==2.7.1" },
+    { name = "torchvision", specifier = "==0.22.1" },
+    { name = "tqdm", specifier = "==4.67.1", index = "https://pypi.org/simple" },
 ]
 
 [[package]]
