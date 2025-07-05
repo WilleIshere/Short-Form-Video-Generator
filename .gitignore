@@ -3,3 +3,5 @@ ffmpeg_bin
 __pycache__
 tts_output
 uv.lock
+piper
+voices
