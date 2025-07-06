@@ -1,32 +1,35 @@
-from torch._prims_common import check
 from src.utils.ffmpeg import check_ffmpeg
 from src.text_to_speech.tts_wrapper import *
-from src.text_to_speech.voice_manager import check_voices
+from src.text_to_speech.piper import generate
+from src.text_to_speech.voice_manager import update_voices
 from src.utils.logger import info
 
-import torch
+#import torch
 import json
 import os
 
 from pprint import pprint
 
-PIPER = os.path.join(os.getcwd(), 'piper', 'piper.exe')
-
 
 def main():
-    info("Starting main process")
-    ffmpeg_path = check_ffmpeg()
-    info(f"ffmpeg path: {ffmpeg_path}")
+    #info("Starting main process")
+    #ffmpeg_path = check_ffmpeg()
+    #info(f"ffmpeg path: {ffmpeg_path}")
 
-    info("Checking device...")
-    device = "cuda" if torch.cuda.is_available() else "cpu"
-    info("Using device 'CPU', cuda not available..." if device == 'cpu' else "Using device 'GPU', cuda installation found...")
+    #info("Checking device...")
+    #device = "cuda" if torch.cuda.is_available() else "cpu"
+    #info("Using device 'CPU', cuda not available..." if device == 'cpu' else "Using device 'GPU', cuda installation found...")
 
-    check_voices()
+    update_voices()
 
-    #os.system(f'{PIPER} --help')
-    #os.system(
-    #    f'echo "Once upon a time, in a quiet village nestled between rolling hills, there lived a curious fox named Finn. Every morning, Finn would explore the meadows, searching for new adventures and friends. One sunny day, he discovered a hidden path that led to a sparkling stream, where he met a wise old turtle who shared stories of distant lands. From that day on, Finn and the turtle became the best of friends, exploring the wonders of the world together." | {PIPER} -m en_US-ryan-high.onnx -c #en_US_ryan_high.onnx.json -f tts_output/test.wav --debug'
+    # Ensure tts_output directory exists
+    os.makedirs('tts_output', exist_ok=True)
+
+    #generate(
+    #    "Once upon a time, in a quiet village nestled between rolling green hills, there lived a curious child named Sam. Every evening, Sam would sit by the window, watching the stars twinkle above and dreaming of adventures beyond the horizon. One night, a gentle breeze carried the sound of distant music, and Sam followed it into the forest, where magical creatures danced beneath the moonlight. From that night on, Sam knew that the world was full of wonder, and every day became a new adventure.",
+    #    voice['model'],
+    #    voice['config'],
+    #    'test.wav'
     #)
 
     exit()

@@ -4,4 +4,7 @@ __pycache__
 tts_output
 uv.lock
 piper
-voices
+voices/en_GB
+voices/en_US
+voices/en_GB.zip
+voices/en_US.zip
