@@ -8,7 +8,7 @@ from src.text_to_speech.tts_wrapper import (
 )
 from src.text_to_speech.voice_manager import update_voices, list_voices
 from src.utils.ffmpeg import check_ffmpeg
-from src.utils.logger import info
+from src.utils.loggr import info
 
 import os
 import json
@@ -18,12 +18,11 @@ def main():
     info("Starting main process")
     ffmpeg_path = check_ffmpeg()
     info(f"ffmpeg path: {ffmpeg_path}")
-    generate_subtitles(ffmpeg_path)
 
     info("Checking device...")
     import torch
     device = 'cuda' if torch.cuda.is_available() else 'cpu'
-    info("WUsing device 'CPU', cuda not available..." if device == 'cpu' else "Using device 'GPU', cuda installation found...")
+    info("Using device 'CPU', cuda not available..." if device == 'cpu' else "Using device 'GPU', cuda installation found...")
 
     update_voices()
     voice = list_voices()['en_US']['amy']['low']
@@ -65,5 +64,7 @@ def main():
         device=device,
         language="en"
     )
+
+    generate_subtitles(ffmpeg_path)
     save_transcription(result, os.path.join(OUTPUT_DIR, 'transcription.json'))
     print(json.dumps(result, indent=2, ensure_ascii=False))
