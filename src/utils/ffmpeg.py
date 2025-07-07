@@ -5,10 +5,20 @@ import requests
 import tempfile
 from tqdm import tqdm
 import urllib.request
-from .logger import info, warning, error, success, debug
+from sys import platform
+from src.utils.loggr import info, warning, error, success, debug
+
+WINDOWS_FFMPEG_URL = "https://www.gyan.dev/ffmpeg/builds/ffmpeg-release-essentials.zip"
+LINUX_FFMPEG_URL = "https://github.com/BtbN/FFmpeg-Builds/releases/download/latest/ffmpeg-master-latest-linux64-gpl.tar.xz"
 
 def check_ffmpeg() -> str:
-    ffmpeg_exe = "ffmpeg.exe"
+    # Set up platform-specific names and paths
+    if platform == 'win32':
+        ffmpeg_exe = "ffmpeg.exe"
+        op = 'w'
+    else:
+        ffmpeg_exe = "ffmpeg"
+        op = 'l'
     ffmpeg_dir = os.path.join(os.getcwd(), "ffmpeg_bin")
     ffmpeg_path = os.path.join(ffmpeg_dir, ffmpeg_exe)
 
@@ -54,31 +64,52 @@ def check_ffmpeg() -> str:
                         pbar.update(len(chunk))
             info(f"Download finished: {filename}")
 
-    url = "https://www.gyan.dev/ffmpeg/builds/ffmpeg-release-essentials.zip"
+    import tarfile
+
+    if op == 'w':
+        url = WINDOWS_FFMPEG_URL
+        archive_name = "ffmpeg.zip"
+    else:
+        url = LINUX_FFMPEG_URL
+        archive_name = "ffmpeg.tar.xz"
+
     with tempfile.TemporaryDirectory() as tmpdir:
-        zip_path = os.path.join(tmpdir, "ffmpeg.zip")
+        archive_path = os.path.join(tmpdir, archive_name)
         info(f"Created temporary directory: {tmpdir}")
         info(f"Downloading ffmpeg from: {url}")
-        download_with_progress(url, zip_path)
-        info(f"ffmpeg zip downloaded to: {zip_path}")
-        info(f"Extracting ffmpeg zip...")
-        with zipfile.ZipFile(zip_path, 'r') as zip_ref:
-            zip_ref.extractall(tmpdir)
+        download_with_progress(url, archive_path)
+        info(f"ffmpeg archive downloaded to: {archive_path}")
+        info(f"Extracting ffmpeg archive...")
+
+        if op == 'w':
+            with zipfile.ZipFile(archive_path, 'r') as zip_ref:
+                zip_ref.extractall(tmpdir)
+        else:
+            with tarfile.open(archive_path, 'r:xz') as tar_ref:
+                tar_ref.extractall(tmpdir)
+            # On Linux, ffmpeg binary is usually named 'ffmpeg' (not 'ffmpeg.exe')
+            ffmpeg_exe = "ffmpeg"
+
         info(f"Extraction complete. Searching for {ffmpeg_exe}...")
 
-        for root, dirs, files in os.walk(tmpdir):
+        found = False
+        for root, _, files in os.walk(tmpdir):
             debug(f"Scanning directory: {root}")
             if ffmpeg_exe in files:
                 extracted_ffmpeg_path = os.path.join(root, ffmpeg_exe)
-                info(f"Located ffmpeg.exe at: {extracted_ffmpeg_path}")
+                info(f"Located {ffmpeg_exe} at: {extracted_ffmpeg_path}")
                 os.makedirs(ffmpeg_dir, exist_ok=True)
-                info(f"Copying ffmpeg.exe to: {ffmpeg_path}")
+                info(f"Copying {ffmpeg_exe} to: {ffmpeg_path}")
                 shutil.copy2(extracted_ffmpeg_path, ffmpeg_path)
-                success(f"ffmpeg.exe copied successfully to: {ffmpeg_path}")
+                # Ensure executable permissions on Linux
+                if op == 'l':
+                    os.chmod(ffmpeg_path, 0o755)
+                success(f"{ffmpeg_exe} copied successfully to: {ffmpeg_path}")
+                found = True
                 break
-        else:
-            error("ffmpeg.exe not found in the downloaded archive.")
-            raise FileNotFoundError("ffmpeg.exe not found in the downloaded archive.")
+        if not found:
+            error(f"{ffmpeg_exe} not found in the downloaded archive.")
+            raise FileNotFoundError(f"{ffmpeg_exe} not found in the downloaded archive.")
 
     success(f"ffmpeg is ready at: {ffmpeg_path}")
     return ffmpeg_path
