@@ -1,6 +1,4 @@
-
 import os
-
 import json
 
 from pprint import pprint
@@ -22,6 +20,7 @@ VOICES_EN_GB_ZIP = os.path.join(VOICES, 'en_GB.zip')
 def update_voices():
     # --- ZIP extraction logic ---
     for file in os.listdir(VOICES):
+        continue
         if file.endswith('.zip'):
             zip_path = os.path.join(VOICES, file)
             extract_folder = os.path.join(VOICES, file[:-4])  # Remove .zip extension
@@ -42,23 +41,28 @@ def update_voices():
                 with zipfile.ZipFile(zip_path, 'r') as zip_ref:
                     zip_ref.extractall(extract_folder)
                 os.utime(extract_folder, (zip_mtime, zip_mtime))
-    # --- End ZIP extraction logic ---
 
     voices = {}
 
     for lang in os.listdir(VOICES):
         voice_folder = os.path.join(VOICES, lang)
         if not os.path.isdir(voice_folder):
-            continue
+            continue  # Skip files like .zip
         voices[lang] = {}
 
         for voice in os.listdir(voice_folder):
+            voice_path = os.path.join(voice_folder, voice)
+            if not os.path.isdir(voice_path):
+                continue  # Skip files
             voices[lang][voice] = {}
 
-            qualitys_folder = os.path.join(voice_folder, voice)
+            qualitys_folder = voice_path
             for quality in os.listdir(qualitys_folder):
+                quality_path = os.path.join(qualitys_folder, quality)
+                if not os.path.isdir(quality_path):
+                    continue  # Skip files
                 voices[lang][voice][quality] = {}
-                contents_folder = os.path.join(qualitys_folder, quality)
+                contents_folder = quality_path
 
                 for file in os.listdir(contents_folder):
                     file_path = os.path.join(contents_folder, file)
