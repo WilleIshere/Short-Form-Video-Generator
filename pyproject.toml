@@ -12,7 +12,12 @@ dependencies = [
     "torch==2.7.1",
     "torchvision==0.22.1",
     "torchaudio==2.7.1",
-    "markupsafe==3.0.2"
+    "markupsafe==3.0.2",
+    "rich==14.0.0",
+    "pydub==0.25.1",
+    "whisper-timestamped==1.15.8",
+    "pillow>=11.0.0",
+    "python-ffmpeg>=2.0.12",
 ]
 
 [tool.uv.sources]
