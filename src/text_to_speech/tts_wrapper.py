@@ -7,7 +7,7 @@ from pydub import AudioSegment
 from rich.console import Console
 
 from src.text_to_speech.piper import generate, OUTPUT_DIR
-from src.utils.logger import info
+from src.utils.loggr import info
 
 console = Console()
 
