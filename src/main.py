@@ -1,50 +1,69 @@
+from src.subtitles.transcriber import transcribe_audio, save_transcription
+from src.subtitles.subtitle_generator import generate_subtitles
+from src.text_to_speech.tts_wrapper import (
+    prepare_tts_output_dir,
+    generate_tts_chunks,
+    combine_audio_chunks,
+    OUTPUT_DIR
+)
+from src.text_to_speech.voice_manager import update_voices, list_voices
 from src.utils.ffmpeg import check_ffmpeg
-from src.text_to_speech.tts_wrapper import *
-from src.text_to_speech.piper import generate
-from src.text_to_speech.voice_manager import update_voices
 from src.utils.logger import info
 
-#import torch
-import json
 import os
-
-from pprint import pprint
+import json
 
 
 def main():
-    #info("Starting main process")
-    #ffmpeg_path = check_ffmpeg()
-    #info(f"ffmpeg path: {ffmpeg_path}")
+    info("Starting main process")
+    ffmpeg_path = check_ffmpeg()
+    info(f"ffmpeg path: {ffmpeg_path}")
+    generate_subtitles(ffmpeg_path)
 
-    #info("Checking device...")
-    #device = "cuda" if torch.cuda.is_available() else "cpu"
-    #info("Using device 'CPU', cuda not available..." if device == 'cpu' else "Using device 'GPU', cuda installation found...")
+    info("Checking device...")
+    import torch
+    device = 'cuda' if torch.cuda.is_available() else 'cpu'
+    info("WUsing device 'CPU', cuda not available..." if device == 'cpu' else "Using device 'GPU', cuda installation found...")
 
     update_voices()
+    voice = list_voices()['en_US']['amy']['low']
 
-    # Ensure tts_output directory exists
-    os.makedirs('tts_output', exist_ok=True)
+    # Prepare TTS output directory
+    prepare_tts_output_dir(OUTPUT_DIR)
 
-    #generate(
-    #    "Once upon a time, in a quiet village nestled between rolling green hills, there lived a curious child named Sam. Every evening, Sam would sit by the window, watching the stars twinkle above and dreaming of adventures beyond the horizon. One night, a gentle breeze carried the sound of distant music, and Sam followed it into the forest, where magical creatures danced beneath the moonlight. From that night on, Sam knew that the world was full of wonder, and every day became a new adventure.",
-    #    voice['model'],
-    #    voice['config'],
-    #    'test.wav'
-    #)
+    # Generate TTS for title
+    with open("title.txt", "r", encoding="utf-8") as f:
+        title_text = f.read()
+    title_chunk_files = generate_tts_chunks(
+        text=title_text,
+        voice=voice,
+        prefix="title",
+        output_dir=OUTPUT_DIR
+    )
 
-    exit()
-    info("Loading tts engine...")
-    from TTS.api import TTS
-    tts = TTS("tts_models/en/ljspeech/tacotron2-DDC").to(device)
+    # Generate TTS for body
+    with open("body.txt", "r", encoding="utf-8") as f:
+        body_text = f.read()
+    body_chunk_files = generate_tts_chunks(
+        text=body_text,
+        voice=voice,
+        prefix="chunk",
+        output_dir=OUTPUT_DIR
+    )
 
-    speakers = tts.speakers
-    print(speakers)
-    for i, voice in enumerate(speakers):
+    # Combine all TTS audio into one file
+    final_path = os.path.join(OUTPUT_DIR, 'final_tts.wav')
+    combine_audio_chunks(
+        chunk_files=title_chunk_files + body_chunk_files,
+        output_path=final_path
+    )
 
-        info(f"Generating audio.. ({i + 1}/{len(speakers)})")
-        tts.tts_to_file(
-            text="This is a test of the text-to-speech system. The quick brown fox jumps over the lazy dog. We are generating this audio to ensure that the TTS engine is working correctly and can handle longer sentences with natural prosody and clarity. Thank you for listening to this demonstration.",
-            speaker="Uta Obando",
-            language="en",
-            file_path=f"tts_output/{voice}.wav"
-        )
+    # Transcribe the combined audio using the new subtitles module
+    result = transcribe_audio(
+        audio_path=final_path,
+        model_name="small.en",
+        device=device,
+        language="en"
+    )
+    save_transcription(result, os.path.join(OUTPUT_DIR, 'transcription.json'))
+    print(json.dumps(result, indent=2, ensure_ascii=False))
