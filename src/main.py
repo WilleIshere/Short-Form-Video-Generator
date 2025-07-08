@@ -1,4 +1,4 @@
-from src.subtitles.transcriber import transcribe_audio, save_transcription
+from src.subtitles.subtitle_aligner import align_audio_to_text
 from src.subtitles.subtitle_generator import generate_subtitles
 from src.text_to_speech.tts_wrapper import (
     prepare_tts_output_dir,
@@ -7,6 +7,7 @@ from src.text_to_speech.tts_wrapper import (
     OUTPUT_DIR
 )
 from src.text_to_speech.voice_manager import update_voices, list_voices
+from src.utils.text_processor import text_to_words, combine_text_files
 from src.utils.ffmpeg import check_ffmpeg
 from src.utils.loggr import info
 
@@ -57,14 +58,13 @@ def main():
         output_path=final_path
     )
 
-    # Transcribe the combined audio using the new subtitles module
-    result = transcribe_audio(
-        audio_path=final_path,
-        model_name="small.en",
-        device=device,
-        language="en"
-    )
+    text_path = 'text.txt'
+    combine_text_files(text_path, 'title.txt', 'body.txt')
+
+    words_path = 'words.txt'
+    text_to_words(text_path, words_path)
+
+    aligned_path = 'tts_output/transcription.json'
+    align_audio_to_text(final_path, words_path, aligned_path)
 
     generate_subtitles(ffmpeg_path)
-    save_transcription(result, os.path.join(OUTPUT_DIR, 'transcription.json'))
-    print(json.dumps(result, indent=2, ensure_ascii=False))
