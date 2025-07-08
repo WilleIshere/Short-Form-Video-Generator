@@ -17,13 +17,10 @@ dependencies = [
     "pydub==0.25.1",
     "whisper-timestamped==1.15.8",
     "pillow>=11.0.0",
-<<<<<<< HEAD
-    "python-ffmpeg>=2.0.12",
-    "numpy>=2.1.2",
-=======
+
     "ffmpeg-python>=0.2.0",
     "github-release-downloader==1.1.0",
->>>>>>> e180d1926fc94f5bf24bd8c9b86877c274bf8eef
+
 ]
 
 [tool.uv.sources]
