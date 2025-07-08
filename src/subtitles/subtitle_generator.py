@@ -5,7 +5,7 @@ import os
 import subprocess
 import tempfile
 
-from ffmpeg import FFmpeg, Progress
+import ffmpeg
 
 import rich
 

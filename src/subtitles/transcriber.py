@@ -1,6 +1,6 @@
 import os
 import json
-from src.utils.logger import info
+from src.utils.loggr import info
 
 try:
     import whisper_timestamped as whisper

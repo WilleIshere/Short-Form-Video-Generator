@@ -1,1 +1,1 @@
-I Let a Stranger Borrow My Charger at the Airport. Six Months Later, She Changed My Life
+Feel free to use this but i havent made any documentation as i had to make this repo public to host the TTS Voice models in releases. Docs comming when i make a release!
