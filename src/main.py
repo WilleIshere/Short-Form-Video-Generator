@@ -67,4 +67,6 @@ def main():
     aligned_path = 'tts_output/transcription.json'
     align_audio_to_text(final_path, words_path, aligned_path)
 
-    generate_subtitles(ffmpeg_path)
+    subs = generate_subtitles()
+
+    render_
