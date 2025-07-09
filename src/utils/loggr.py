@@ -1,5 +1,6 @@
-import sys
 from datetime import datetime
+import sys
+
 
 class LogType:
     INFO = "INFO"

@@ -69,4 +69,3 @@ def main():
 
     subs = generate_subtitles()
 
-    render_

@@ -5,8 +5,7 @@ import os
 import subprocess
 import tempfile
 
-import ffmpeg
-
+from pprint import pprint
 import rich
 
 def generate_subtitles():
@@ -24,20 +23,23 @@ def generate_subtitles():
     images = []
 
     with console.status('Writing images...') as s:
+        pprint(text_data)
         count = 0
         for segment in text_data['fragments']:
+            print(segment)
             s.status = f'Writing image: {count}'
             im = Image.new("RGBA", (1080, 1920))
             draw = ImageDraw.Draw(im)
 
-            text_length = draw.textlength(segment['lines'][0], font)
+            text_length = draw.textlength(str(segment['lines'][0]), font)
             x = (im.width - text_length) / 2
             y = im.height / 2
 
-            draw.text((x, y), segment['lines'][0], fill=(255, 255, 255), font=font)
+            draw.text((x, y), str(segment['lines'][0]), fill=(255, 255, 255), font=font)
 
             image_path = f'subtitle_images/{count}.png'
             im.save(image_path)
+            print(f'Saved image: {image_path}')
 
             image = {
                 'image_path': image_path,
@@ -47,5 +49,7 @@ def generate_subtitles():
             images.append(image)
 
             count += 1
+
+    print('Done')
 
     return images
