@@ -9,7 +9,7 @@ import ffmpeg
 
 import rich
 
-def generate_subtitles(ffmpeg_bin: str, output_path="output.mp4", resolution=(1080, 1920), fps=30):
+def generate_subtitles():
     if os.path.isdir('subtitle_images'):
         shutil.rmtree('subtitle_images')
     os.makedirs('subtitle_images', exist_ok=True)
@@ -47,3 +47,5 @@ def generate_subtitles(ffmpeg_bin: str, output_path="output.mp4", resolution=(10
             images.append(image)
 
             count += 1
+
+    return images
