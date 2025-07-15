@@ -6,6 +6,6 @@ uv.lock
 piper
 voices
 subtitle_images
-text.txt
+src/text_to_speech/text.txt
 test.py
 words.txt
