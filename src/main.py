@@ -1,7 +1,6 @@
 from src.renderer.subtitle_renderer import generate_subtitle_chunks
-
+from src.renderer.final_renderer import render
 from src.subtitles.subtitle_image_generator import generate_subtitle_images
-
 from src.text_to_speech.tts_engine import TTSWrapper
 
 from src.utils.text_processor import combine_text_files
@@ -40,5 +39,11 @@ def main():
 
     generate_subtitle_images()
 
-    generate_subtitle_chunks(background_video_path='background.mp4')
+    subtitle_chunks = generate_subtitle_chunks(background_video_path='background.mp4', ffmpeg_path=ffmpeg_path)
+    render(
+        subs=subtitle_chunks,
+        background_video_path='background.mp4',
+        audio_path='tts_output/final_tts.wav'
+    )
+    
 

@@ -9,3 +9,5 @@ subtitle_images
 src/text_to_speech/text.txt
 test.py
 words.txt
+video_chunks
+background.mp4

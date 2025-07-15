@@ -1,24 +1,29 @@
-import pysrt
+import subtitle_parser
 
 from PIL import Image, ImageDraw, ImageFont
+import json
 import os
 
 def generate_subtitle_images():
     data = {}
 
-    srt = pysrt.open('tts_output/transcript.srt')
+    with open('tts_output/transcript.srt', 'r') as f:
+        srt = subtitle_parser.SrtParser(f)
+        srt.parse()
 
     prev_end = 0
     i = 0
     sub_i = 0
-    for sub in srt:
+    for sub in srt.subtitles:
         if sub.start > prev_end:
-            image_path = 'subtitle_images/transparent.png'
+            gap_path = f'subtitle_images/subtitle_gap_{i}.png'
+            gap_img = Image.new('RGBA', (1280, 720), (0, 0, 0, 0))
+            gap_img.save(gap_path)
             data[i] = {
-                'image': image_path,
-                'start': sub.start.seconds,
-                'end': sub.end.seconds,
-                'duration': sub.end.seconds - sub.start.seconds
+                'image': gap_path,
+                'start': prev_end,
+                'end': sub.start,
+                'duration': sub.start - prev_end
             }
             i += 1
         image_path = f'subtitle_images/subtitle_{sub_i}.png'
@@ -29,14 +34,13 @@ def generate_subtitle_images():
         image.save(image_path)
         data[i] = {
             'image': image_path,
-            'start': sub.start.seconds,
-            'end': sub.end.seconds,
-            'duration': sub.end.seconds - sub.start.seconds
+            'start': sub.start,
+            'end': sub.end,
+            'duration': sub.end - sub.start
         }
-        prev_end = sub.end
         i += 1
         sub_i += 1
+        prev_end = sub.end
 
     with open('subtitle_images/data.json', 'w') as f:
-        import json
         json.dump(data, f, indent=4)
