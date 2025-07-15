@@ -1,71 +1,44 @@
-from src.subtitles.subtitle_aligner import align_audio_to_text
-from src.subtitles.subtitle_generator import generate_subtitles
-from src.text_to_speech.tts_wrapper import (
-    prepare_tts_output_dir,
-    generate_tts_chunks,
-    combine_audio_chunks,
-    OUTPUT_DIR
-)
-from src.text_to_speech.voice_manager import update_voices, list_voices
-from src.utils.text_processor import text_to_words, combine_text_files
+from src.renderer.subtitle_renderer import generate_subtitle_chunks
+
+from src.subtitles.subtitle_image_generator import generate_subtitle_images
+
+from src.text_to_speech.tts_engine import TTSWrapper
+
+from src.utils.text_processor import combine_text_files
 from src.utils.ffmpeg import check_ffmpeg
+from src.utils.cleaner import clean
 from src.utils.loggr import info
 
-import os
-import json
 
+TTS_PROVIDER = 'edge' # Piper is not used due to issues with aligning subtitle timestamps
 
 def main():
-    info("Starting main process")
+    clean()
+
+    info("Checking ffmpeg installation...")
     ffmpeg_path = check_ffmpeg()
     info(f"ffmpeg path: {ffmpeg_path}")
 
-    info("Checking device...")
-    import torch
-    device = 'cuda' if torch.cuda.is_available() else 'cpu'
-    info("Using device 'CPU', cuda not available..." if device == 'cpu' else "Using device 'GPU', cuda installation found...")
+    # info("Checking device...")
+    # import torch
+    # device = 'cuda' if torch.cuda.is_available() else 'cpu'
+    # info("Using device 'CPU', cuda not available..." if device == 'cpu' else "Using device 'GPU', cuda installation found...")
 
-    update_voices()
-    voice = list_voices()['en_US']['amy']['low']
+    info("Processing text files...")
+    combine_text_files('text.txt', 'title.txt', 'body.txt')
+    with open('text.txt', 'r') as f:
+        text = f.read()
 
-    # Prepare TTS output directory
-    prepare_tts_output_dir(OUTPUT_DIR)
-
-    # Generate TTS for title
-    with open("title.txt", "r", encoding="utf-8") as f:
-        title_text = f.read()
-    title_chunk_files = generate_tts_chunks(
-        text=title_text,
-        voice=voice,
-        prefix="title",
-        output_dir=OUTPUT_DIR
+    info("Generating tts...")
+    tts = TTSWrapper(provider=TTS_PROVIDER)
+    voices = tts.get_voices()
+    tts.generate(
+        text=text, voice=voices[0],
+        output_audio='tts_output/final_tts.wav',
+        output_srt='tts_output/transcript.srt'
     )
 
-    # Generate TTS for body
-    with open("body.txt", "r", encoding="utf-8") as f:
-        body_text = f.read()
-    body_chunk_files = generate_tts_chunks(
-        text=body_text,
-        voice=voice,
-        prefix="chunk",
-        output_dir=OUTPUT_DIR
-    )
+    generate_subtitle_images()
 
-    # Combine all TTS audio into one file
-    final_path = os.path.join(OUTPUT_DIR, 'final_tts.wav')
-    combine_audio_chunks(
-        chunk_files=title_chunk_files + body_chunk_files,
-        output_path=final_path
-    )
-
-    text_path = 'text.txt'
-    combine_text_files(text_path, 'title.txt', 'body.txt')
-
-    words_path = 'words.txt'
-    text_to_words(text_path, words_path)
-
-    aligned_path = 'tts_output/transcription.json'
-    align_audio_to_text(final_path, words_path, aligned_path)
-
-    subs = generate_subtitles()
+    generate_subtitle_chunks(background_video_path='background.mp4')
 
