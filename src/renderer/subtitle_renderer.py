@@ -1,4 +1,4 @@
-from moviepy import ImageClip, concatenate_videoclips
+from moviepy import ImageClip, concatenate_videoclips, CompositeVideoClip, vfx
 import json
 import os
 
@@ -9,23 +9,54 @@ def ms_to_hms(ms: int) -> str:
     s = seconds % 60
     return f"{h:02}:{m:02}:{s:02}"
 
-def generate_subtitle_chunks(background_video_path: str, ffmpeg_path: str) -> None:
+def generate_subtitle_chunks(settings) -> None:
     with open('subtitle_images/data.json', 'r') as f:
         data: dict = json.load(f)
 
     clips = []
     max_end = 0
-    for i in range(len(data.keys())):
-        print(f"Processing chunk {i+1}/{len(data.keys())}")
-        img_path, start_time, end_time, duration = data[str(i)].values()
-        start = start_time / 1000
-        end = end_time / 1000
-        clip = ImageClip(img_path).with_start(start).with_duration(end - start)
+    num_chunks = len(data.keys())
+
+    for i in range(num_chunks):
+        print(f"Processing chunk {i+1}/{num_chunks}")
+        entry = data[str(i)]
+
+        img_path = entry['image']
+        start_time_ms = entry['start']
+        end_time_ms = entry['end']
+        duration_ms = entry['duration']
+
+        # Convert ms to seconds
+        start = start_time_ms / 1000
+        end = end_time_ms / 1000
+        duration = end - start
+
+        # Skip invalid durations
+        if duration <= 0:
+            print(f"Skipping chunk {i+1}: zero or negative duration.")
+            continue
+
+        # Create the ImageClip and add effects
+        clip = ImageClip(img_path).with_duration(duration)
+        clip = (
+            clip
+            .with_start(start)
+            .with_effects([vfx.CrossFadeIn(duration=clip.duration/2)]) # Animation effect
+            .with_position((
+                settings['Subtitles']['align_horizontal'], 
+                settings['Subtitles']['align_vertical']
+            ))  # Align subtitle images
+        ) 
         clips.append(clip)
+
+        # Track the maximum end time for the composite duration
         if end > max_end:
             max_end = end
-    from moviepy import CompositeVideoClip
-    result = CompositeVideoClip(clips, size=(1280, 720)).with_duration(max_end)
+
+    # Composite all subtitle image clips
+    w, h = settings['Video']['resolution'].split('x')
+    w, h = int(w), int(h)
+    result = CompositeVideoClip(clips, size=(w, h)).with_duration(max_end)
     return result
 
 

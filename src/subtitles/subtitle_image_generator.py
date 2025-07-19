@@ -4,7 +4,9 @@ from PIL import Image, ImageDraw, ImageFont
 import json
 import os
 
-def generate_subtitle_images():
+def generate_subtitle_images(settings):
+    w, h = settings['Video']['resolution'].split('x')
+    w, h = int(w), int(h)
     data = {}
 
     with open('tts_output/transcript.srt', 'r') as f:
@@ -14,10 +16,22 @@ def generate_subtitle_images():
     prev_end = 0
     i = 0
     sub_i = 0
+    print(int(settings['Subtitles']['font_size']))
+
+    # Load font once
+    try:
+        font = ImageFont.truetype(
+            settings['Subtitles']['font_path'], 
+            int(settings['Subtitles']['font_size'])
+            )
+    except Exception:
+        font = ImageFont.load_default()
+
     for sub in srt.subtitles:
+        # Insert transparent gap image if needed
         if sub.start > prev_end:
             gap_path = f'subtitle_images/subtitle_gap_{i}.png'
-            gap_img = Image.new('RGBA', (1280, 720), (0, 0, 0, 0))
+            gap_img = Image.new('RGBA', (w, h), (0, 0, 0, 0))
             gap_img.save(gap_path)
             data[i] = {
                 'image': gap_path,
@@ -26,27 +40,45 @@ def generate_subtitle_images():
                 'duration': sub.start - prev_end
             }
             i += 1
-        image_path = f'subtitle_images/subtitle_{sub_i}.png'
-        image = Image.new('RGBA', (1280, 720), (0, 0, 0, 0))
-        draw = ImageDraw.Draw(image)
-        try:
-            font = ImageFont.truetype('assets/fonts/Roboto.ttf', 64)
-        except Exception:
-            font = ImageFont.load_default()
-        # Center the text
+
+        # Prepare subtitle text and image size
         text = sub.text
-        text_bbox = draw.textbbox((0, 0), text, font=font)
+        # Calculate text bounding box for tight cropping
+        dummy_img = Image.new('RGBA', (1, 1), (0, 0, 0, 0))
+        dummy_draw = ImageDraw.Draw(dummy_img)
+        text_bbox = dummy_draw.textbbox((0, 0), text, font=font, align=settings['Subtitles']['align_horizontal'])
         text_width = text_bbox[2] - text_bbox[0]
         text_height = text_bbox[3] - text_bbox[1]
-        x = (1280 - text_width) // 2
-        y = (720 - text_height) // 2
-        draw.text((x, y), text, fill=(255, 255, 255), font=font)
+        stroke_width = 4
+        pad_x = stroke_width + 8  # Horizontal padding
+        pad_y_top = stroke_width + 8  # Top padding
+        pad_y_bottom = stroke_width * 4 + 16  # Extra bottom padding for descenders, stroke, and fudge factor
+        img_w = text_width + 2 * pad_x
+        img_h = text_height + pad_y_top + pad_y_bottom
+
+        # Create the subtitle image
+        image_path = f'subtitle_images/subtitle_{sub_i}.png'
+        image = Image.new('RGBA', (img_w, img_h), (0, 0, 0, 0))
+        draw = ImageDraw.Draw(image)
+
+        # Draw stroke (outline)
+        stroke_fill = tuple(map(int, settings['Subtitles']['stroke_color'].split(',')))
+        text_fill = tuple(map(int, settings['Subtitles']['text_color'].split(',')))
+        for dx in range(-stroke_width, stroke_width+1):
+            for dy in range(-stroke_width, stroke_width+1):
+                if dx != 0 or dy != 0:
+                    draw.text((pad_x+dx, pad_y_top+dy), text, font=font, fill=stroke_fill)
+        # Draw main text
+        draw.text((pad_x, pad_y_top), text, fill=text_fill, font=font)
+
         image.save(image_path)
         data[i] = {
             'image': image_path,
             'start': sub.start,
             'end': sub.end,
-            'duration': sub.end - sub.start
+            'duration': sub.end - sub.start,
+            'width': img_w,
+            'height': img_h
         }
         i += 1
         sub_i += 1
