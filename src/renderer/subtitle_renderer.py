@@ -15,22 +15,37 @@ def generate_subtitle_chunks(background_video_path: str, ffmpeg_path: str) -> No
 
     clips = []
     max_end = 0
-    for i in range(len(data.keys())):
-        print(f"Processing chunk {i+1}/{len(data.keys())}")
+    num_chunks = len(data.keys())
+
+    for i in range(num_chunks):
+        print(f"Processing chunk {i+1}/{num_chunks}")
         entry = data[str(i)]
-        
+
         img_path = entry['image']
-        start_time = entry['start']
-        end_time = entry['end']
-        duration = entry['duration']
-        
-        start = start_time / 1000
-        end = end_time / 1000
-        clip: ImageClip = ImageClip(img_path).with_start(start).with_duration(end - start)
+        start_time_ms = entry['start']
+        end_time_ms = entry['end']
+        duration_ms = entry['duration']
+
+        # Convert ms to seconds
+        start = start_time_ms / 1000
+        end = end_time_ms / 1000
+        duration = end - start
+
+        # Skip invalid durations
+        if duration <= 0:
+            print(f"Skipping chunk {i+1}: zero or negative duration.")
+            continue
+
+        # Create the ImageClip and add effects
+        clip = ImageClip(img_path).with_start(start).with_duration(duration)
         clip = clip.with_effects([vfx.CrossFadeIn(duration=clip.duration/2)])
         clips.append(clip)
+
+        # Track the maximum end time for the composite duration
         if end > max_end:
             max_end = end
+
+    # Composite all subtitle image clips
     result = CompositeVideoClip(clips, size=(720, 1280)).with_duration(max_end)
     return result
 
