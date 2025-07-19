@@ -16,12 +16,13 @@ def generate_subtitle_images(settings):
     prev_end = 0
     i = 0
     sub_i = 0
+    print(int(settings['Subtitles']['font_size']))
 
     # Load font once
     try:
         font = ImageFont.truetype(
             settings['Subtitles']['font_path'], 
-            settings['Subtitles']['font_size']
+            int(settings['Subtitles']['font_size'])
             )
     except Exception:
         font = ImageFont.load_default()
