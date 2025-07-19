@@ -2,7 +2,7 @@
 # In Development
 
 > [!CAUTION] 
-> **This project is in heavy development and is not ready to be used easily, feel free to contribute**
+> **This project is in heavy development and is not ready to be used easily. You might encounter some spaghetti code. Feel free to contribute!**
 
 # Short-Form-Video-Generator
 
