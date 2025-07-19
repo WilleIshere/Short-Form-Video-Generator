@@ -11,7 +11,7 @@ def render(subs, background_video_path='assets/background_videos/background.mp4'
     final = final.with_audio(tts_audio)
     final.write_videofile(
         'video_chunks/final_video.mp4',
-        codec='libx264', fps=background.fps, 
+        codec='libx264', fps=12, # Lower fps for prototyping 
         audio_codec='aac', preset='ultrafast',
         ffmpeg_params=['-crf', '30', '-pix_fmt', 'yuv420p']
     )
