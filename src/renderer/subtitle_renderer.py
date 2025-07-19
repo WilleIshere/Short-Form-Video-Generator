@@ -39,6 +39,7 @@ def generate_subtitle_chunks(background_video_path: str, ffmpeg_path: str) -> No
         # Create the ImageClip and add effects
         clip = ImageClip(img_path).with_start(start).with_duration(duration)
         clip = clip.with_effects([vfx.CrossFadeIn(duration=clip.duration/2)])
+        clip = clip.with_position(('center', 'center'))  # Center subtitle images
         clips.append(clip)
 
         # Track the maximum end time for the composite duration
