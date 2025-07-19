@@ -17,7 +17,7 @@ def generate_subtitle_images():
     for sub in srt.subtitles:
         if sub.start > prev_end:
             gap_path = f'subtitle_images/subtitle_gap_{i}.png'
-            gap_img = Image.new('RGBA', (1280, 720), (0, 0, 0, 0))
+            gap_img = Image.new('RGBA', (720, 1280), (0, 0, 0, 0))
             gap_img.save(gap_path)
             data[i] = {
                 'image': gap_path,
@@ -27,7 +27,7 @@ def generate_subtitle_images():
             }
             i += 1
         image_path = f'subtitle_images/subtitle_{sub_i}.png'
-        image = Image.new('RGBA', (1280, 720), (0, 0, 0, 0))
+        image = Image.new('RGBA', (720, 1280), (0, 0, 0, 0))
         draw = ImageDraw.Draw(image)
         try:
             font = ImageFont.truetype('assets/fonts/Roboto.ttf', 64)
@@ -38,8 +38,8 @@ def generate_subtitle_images():
         text_bbox = draw.textbbox((0, 0), text, font=font)
         text_width = text_bbox[2] - text_bbox[0]
         text_height = text_bbox[3] - text_bbox[1]
-        x = (1280 - text_width) // 2
-        y = (720 - text_height) // 2
+        x = (720 - text_width) // 2
+        y = (1280 - text_height) // 2
         draw.text((x, y), text, fill=(255, 255, 255), font=font)
         image.save(image_path)
         data[i] = {
