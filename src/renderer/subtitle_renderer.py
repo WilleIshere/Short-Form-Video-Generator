@@ -17,7 +17,13 @@ def generate_subtitle_chunks(background_video_path: str, ffmpeg_path: str) -> No
     max_end = 0
     for i in range(len(data.keys())):
         print(f"Processing chunk {i+1}/{len(data.keys())}")
-        img_path, start_time, end_time, duration = data[str(i)].values()
+        entry = data[str(i)]
+        
+        img_path = entry['image']
+        start_time = entry['start']
+        end_time = entry['end']
+        duration = entry['duration']
+        
         start = start_time / 1000
         end = end_time / 1000
         clip: ImageClip = ImageClip(img_path).with_start(start).with_duration(end - start)
