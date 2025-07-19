@@ -30,7 +30,7 @@ def generate_subtitle_images():
         image = Image.new('RGBA', (720, 1280), (0, 0, 0, 0))
         draw = ImageDraw.Draw(image)
         try:
-            font = ImageFont.truetype('assets/fonts/Roboto.ttf', 64)
+            font = ImageFont.truetype('assets/fonts/Roboto.ttf', 72)
         except Exception:
             font = ImageFont.load_default()
         # Center the text
