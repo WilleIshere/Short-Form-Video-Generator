@@ -2,8 +2,10 @@ from moviepy import VideoFileClip, CompositeVideoClip, AudioFileClip
 
 def render(settings, subs, audio_path='tts_output/final_tts.wav'):
     # Extract video and advanced settings
-    video_settings = settings.config['Video']
-    adv_settings = settings.config['Advanced Video']
+    video_settings = settings['Video']
+    adv_settings = settings['Advanced Video']
+    w, h = settings['Video']['resolution'].split('x')
+    w, h = int(w), int(h)
 
     # Load background video and TTS audio
     background = VideoFileClip(video_settings['background_video_path'])
@@ -12,7 +14,7 @@ def render(settings, subs, audio_path='tts_output/final_tts.wav'):
     # Crop and resize background to 9:16 (720x1280)
     w, h = background.size
     background = background.cropped(x1=w/3, y1=0, x2=w*2/3, y2=h)
-    background = background.resized((720, 1280))
+    background = background.resized((w, h))
 
     # Determine the final video duration
     final_duration = max(subs.duration, tts_audio.duration)
@@ -30,7 +32,6 @@ def render(settings, subs, audio_path='tts_output/final_tts.wav'):
         fps=int(video_settings['fps']),
         audio_codec=adv_settings['audio_codec'],
         preset=adv_settings['preset'],
-        ffmpeg_params=eval(adv_settings['ffmpeg_params']) if isinstance(adv_settings['ffmpeg_params'], str) else adv_settings['ffmpeg_params']
     )
 
     # Cleanup
