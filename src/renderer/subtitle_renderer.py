@@ -9,7 +9,7 @@ def ms_to_hms(ms: int) -> str:
     s = seconds % 60
     return f"{h:02}:{m:02}:{s:02}"
 
-def generate_subtitle_chunks(background_video_path: str, ffmpeg_path: str) -> None:
+def generate_subtitle_chunks(settings) -> None:
     with open('subtitle_images/data.json', 'r') as f:
         data: dict = json.load(f)
 
@@ -51,7 +51,9 @@ def generate_subtitle_chunks(background_video_path: str, ffmpeg_path: str) -> No
             max_end = end
 
     # Composite all subtitle image clips
-    result = CompositeVideoClip(clips, size=(720, 1280)).with_duration(max_end)
+    w, h = settings['Video']['res'].split('x')
+    w, h = int(w), int(h)
+    result = CompositeVideoClip(clips, size=(w, h)).with_duration(max_end)
     return result
 
 
