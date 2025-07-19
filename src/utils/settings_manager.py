@@ -16,8 +16,8 @@ class Settings(configparser.ConfigParser):
             'stroke_width': '4',
             'stroke_color': '0,0,0',
             'text_color': '255,255,255',
-            'padding': '12',
-            'align': 'center'
+            'align_horizontal': 'center',
+            'align_vertical': 'center'
         }
         self['Video'] = {
             'background_video_path': 'assets/background_videos/background.mp4',
