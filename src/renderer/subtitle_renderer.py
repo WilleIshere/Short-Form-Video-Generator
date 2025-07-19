@@ -21,7 +21,7 @@ def generate_subtitle_chunks(background_video_path: str, ffmpeg_path: str) -> No
         start = start_time / 1000
         end = end_time / 1000
         clip: ImageClip = ImageClip(img_path).with_start(start).with_duration(end - start)
-        clip = clip.with_effects([vfx.SlideIn(duration=clip.duration, side='bottom')])
+        clip = clip.with_effects([vfx.SlideIn(duration=clip.duration/2, side='bottom')])
         clips.append(clip)
         if end > max_end:
             max_end = end
