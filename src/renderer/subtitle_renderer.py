@@ -42,7 +42,10 @@ def generate_subtitle_chunks(settings) -> None:
             clip
             .with_start(start)
             .with_effects([vfx.CrossFadeIn(duration=clip.duration/2)]) # Animation effect
-            .with_position(('center', 'center'))  # Center subtitle images
+            .with_position((
+                settings['Subtitles']['align_horizontal'], 
+                settings['Subtitles']['align_vertical']
+                ))  # Align subtitle images
         ) 
         clips.append(clip)
 
