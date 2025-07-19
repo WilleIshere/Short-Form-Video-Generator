@@ -45,7 +45,7 @@ def generate_subtitle_chunks(settings) -> None:
             .with_position((
                 settings['Subtitles']['align_horizontal'], 
                 settings['Subtitles']['align_vertical']
-                ))  # Align subtitle images
+            ))  # Align subtitle images
         ) 
         clips.append(clip)
 
