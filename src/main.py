@@ -6,12 +6,16 @@ from src.text_to_speech.tts_engine import TTSWrapper
 from src.utils.text_processor import combine_text_files
 from src.utils.ffmpeg import check_ffmpeg
 from src.utils.cleaner import clean
+
 from src.utils.loggr import info
+from src.utils.subtitle_manager import SubtitleManager
 
 
 TTS_PROVIDER = 'edge' # Piper is not used due to issues with aligning subtitle timestamps
 
 def main():
+    # Load subtitle manager (loads/creates subtitle_settings.ini)
+    subtitle_manager = SubtitleManager()
     clean()
 
     info("Checking ffmpeg installation...")
