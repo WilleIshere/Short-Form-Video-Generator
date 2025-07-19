@@ -37,12 +37,12 @@ def generate_subtitle_chunks(settings) -> None:
             continue
 
         # Create the ImageClip and add effects
+        clip = ImageClip(img_path).with_duration(duration)
         clip = (
-            ImageClip(img_path)
-                .with_start(start)
-                .with_duration(duration)
-                .with_effects([vfx.CrossFadeIn(duration=clip.duration/2)]) # Animation effect
-                .with_position(('center', 'center'))  # Center subtitle images
+            clip
+            .with_start(start)
+            .with_effects([vfx.CrossFadeIn(duration=clip.duration/2)]) # Animation effect
+            .with_position(('center', 'center'))  # Center subtitle images
         ) 
         clips.append(clip)
 
@@ -51,7 +51,7 @@ def generate_subtitle_chunks(settings) -> None:
             max_end = end
 
     # Composite all subtitle image clips
-    w, h = settings['Video']['res'].split('x')
+    w, h = settings['Video']['resolution'].split('x')
     w, h = int(w), int(h)
     result = CompositeVideoClip(clips, size=(w, h)).with_duration(max_end)
     return result
