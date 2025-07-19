@@ -8,14 +8,14 @@ from src.utils.ffmpeg import check_ffmpeg
 from src.utils.cleaner import clean
 
 from src.utils.loggr import info
-from src.utils.subtitle_manager import SubtitleManager
+from src.utils.settings_manager import Settings
 
 
 TTS_PROVIDER = 'edge' # Piper is not used due to issues with aligning subtitle timestamps
 
 def main():
     # Load subtitle manager (loads/creates subtitle_settings.ini)
-    subtitle_manager = SubtitleManager()
+    settings = Settings()
     clean()
 
     info("Checking ffmpeg installation...")
@@ -33,7 +33,7 @@ def main():
         text = f.read()
 
     info("Generating tts...")
-    tts = TTSWrapper(provider=TTS_PROVIDER)
+    tts = TTSWrapper(settings)
     voices = tts.get_voices()
     tts.generate(
         text=text, voice=voices[0],
@@ -41,13 +41,12 @@ def main():
         output_srt='tts_output/transcript.srt'
     )
 
-    generate_subtitle_images()
+    generate_subtitle_images(settings)
 
-    subtitle_chunks = generate_subtitle_chunks(background_video_path='background.mp4', ffmpeg_path=ffmpeg_path)
+    subtitle_chunks = generate_subtitle_chunks(settings)
     render(
+        settings,
         subs=subtitle_chunks,
-        background_video_path='assets/background_videos/background.mp4',
-        audio_path='tts_output/final_tts.wav'
     )
     
 
