@@ -4,7 +4,7 @@
 > [!CAUTION] 
 > **This project is in heavy development and is not ready to be used easily. You might encounter some spaghetti code. Feel free to contribute!**
 
-# Short-Form-Video-Generator
+## Short-Form-Video-Generator
 
 This is a project that will be able to automatically create many types of short-form videos for tiktok and youtube-shorts.
 
@@ -24,7 +24,7 @@ Install from github source
   pip install -r requirements.txt
   # Install all the required packages
 ```
-    
+
 ## Run Locally
 
 After installing run the script
@@ -36,4 +36,3 @@ After installing run the script
 If run the first time the script will quit and create a ```config.ini``` file. Edit it to your liking and run the script again
 
 Now it should generate a video
-
