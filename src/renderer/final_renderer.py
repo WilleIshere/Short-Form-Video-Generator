@@ -1,6 +1,6 @@
 from moviepy import VideoFileClip, CompositeVideoClip, AudioFileClip
 
-def render(subs, background_video_path='background.mp4', audio_path='tts_output/final_tts.wav'):
+def render(subs, background_video_path='assets/background_videos/background.mp4', audio_path='tts_output/final_tts.wav'):
     background = VideoFileClip(background_video_path)
     tts_audio = AudioFileClip(audio_path)
     w, h = background.size
