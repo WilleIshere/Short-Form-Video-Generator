@@ -42,7 +42,7 @@ def main():
     subtitle_chunks = generate_subtitle_chunks(background_video_path='background.mp4', ffmpeg_path=ffmpeg_path)
     render(
         subs=subtitle_chunks,
-        background_video_path='background.mp4',
+        background_video_path='assets/background_videos/background.mp4',
         audio_path='tts_output/final_tts.wav'
     )
     
