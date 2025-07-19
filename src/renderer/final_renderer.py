@@ -12,7 +12,8 @@ def render(subs, background_video_path='assets/background_videos/background.mp4'
     final.write_videofile(
         'video_chunks/final_video.mp4',
         codec='libx264', fps=background.fps, 
-        audio_codec='aac'
+        audio_codec='aac', preset='ultrafast',
+        ffmpeg_params=['-crf', '30', '-pix_fmt', 'yuv420p']
     )
     
     background.close()
