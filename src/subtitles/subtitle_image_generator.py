@@ -35,7 +35,13 @@ def generate_subtitle_images():
             font = ImageFont.load_default()
         # Center the text
         text = sub.text
-        text_bbox = draw.textbbox((0, 0), text, font=font)
+        text_bbox = draw.textbbox(
+            (0, 0), 
+            text, 
+            font=font,
+            align='center',
+            stroke_width=4,
+        )
         text_width = text_bbox[2] - text_bbox[0]
         text_height = text_bbox[3] - text_bbox[1]
         x = (720 - text_width) // 2
