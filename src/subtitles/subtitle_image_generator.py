@@ -46,7 +46,7 @@ def generate_subtitle_images():
         stroke_width = 4
         pad_x = stroke_width + 8  # Horizontal padding
         pad_y_top = stroke_width + 8  # Top padding
-        pad_y_bottom = stroke_width * 2 + 8  # Extra bottom padding for descenders and stroke
+        pad_y_bottom = stroke_width * 4 + 16  # Extra bottom padding for descenders, stroke, and fudge factor
         img_w = text_width + 2 * pad_x
         img_h = text_height + pad_y_top + pad_y_bottom
 
