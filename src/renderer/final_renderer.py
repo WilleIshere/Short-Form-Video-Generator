@@ -5,8 +5,8 @@ def render(settings, subs, audio_path='tts_output/final_tts.wav'):
     video_settings = settings['Video']
     adv_settings = settings['Advanced Video']
     width, height = settings['Video']['resolution'].split('x')
-    width, height = int(w), int(h)
-    print(w, h)
+    width, height = int(width), int(height)
+    print(width, height)
 
     # Load background video and TTS audio
     background = VideoFileClip(video_settings['background_video_path'])
