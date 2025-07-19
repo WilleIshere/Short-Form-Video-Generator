@@ -1,4 +1,4 @@
-from moviepy import ImageClip, concatenate_videoclips
+from moviepy import ImageClip, concatenate_videoclips, CompositeVideoClip, vfx
 import json
 import os
 
@@ -20,11 +20,11 @@ def generate_subtitle_chunks(background_video_path: str, ffmpeg_path: str) -> No
         img_path, start_time, end_time, duration = data[str(i)].values()
         start = start_time / 1000
         end = end_time / 1000
-        clip = ImageClip(img_path).with_start(start).with_duration(end - start)
+        clip: ImageClip = ImageClip(img_path).with_start(start).with_duration(end - start)
+        clip = clip.with_effects([vfx.AccelDecel(clip.duration, .5, .5)])
         clips.append(clip)
         if end > max_end:
             max_end = end
-    from moviepy import CompositeVideoClip
     result = CompositeVideoClip(clips, size=(1280, 720)).with_duration(max_end)
     return result
 
