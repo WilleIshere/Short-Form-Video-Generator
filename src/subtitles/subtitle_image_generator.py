@@ -5,7 +5,7 @@ import json
 import os
 
 def generate_subtitle_images(settings):
-    w, h = settings['Video']['res'].split('x')
+    w, h = settings['Video']['resolution'].split('x')
     w, h = int(w), int(h)
     data = {}
 
