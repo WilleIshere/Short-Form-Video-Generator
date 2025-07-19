@@ -1,0 +1,1 @@
+# TODO Add reddit scraper to write to title.txt and body.txt, or just text.txt to skip the combine step
