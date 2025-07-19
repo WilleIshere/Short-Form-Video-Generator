@@ -4,8 +4,9 @@ def render(settings, subs, audio_path='tts_output/final_tts.wav'):
     # Extract video and advanced settings
     video_settings = settings['Video']
     adv_settings = settings['Advanced Video']
-    w, h = settings['Video']['resolution'].split('x')
-    w, h = int(w), int(h)
+    width, height = settings['Video']['resolution'].split('x')
+    width, height = int(w), int(h)
+    print(w, h)
 
     # Load background video and TTS audio
     background = VideoFileClip(video_settings['background_video_path'])
@@ -14,7 +15,7 @@ def render(settings, subs, audio_path='tts_output/final_tts.wav'):
     # Crop and resize background to 9:16 (720x1280)
     w, h = background.size
     background = background.cropped(x1=w/3, y1=0, x2=w*2/3, y2=h)
-    background = background.resized((w, h))
+    background = background.resized((width, height))
 
     # Determine the final video duration
     final_duration = max(subs.duration, tts_audio.duration)
