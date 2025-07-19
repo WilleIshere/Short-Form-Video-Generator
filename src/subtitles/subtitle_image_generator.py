@@ -29,8 +29,18 @@ def generate_subtitle_images():
         image_path = f'subtitle_images/subtitle_{sub_i}.png'
         image = Image.new('RGBA', (1280, 720), (0, 0, 0, 0))
         draw = ImageDraw.Draw(image)
-        font = ImageFont.load_default()
-        draw.text((50, 350), sub.text, fill=(255, 255, 255), font=font)
+        try:
+            font = ImageFont.truetype('assets/fonts/Roboto.ttf', 64)
+        except Exception:
+            font = ImageFont.load_default()
+        # Center the text
+        text = sub.text
+        text_bbox = draw.textbbox((0, 0), text, font=font)
+        text_width = text_bbox[2] - text_bbox[0]
+        text_height = text_bbox[3] - text_bbox[1]
+        x = (1280 - text_width) // 2
+        y = (720 - text_height) // 2
+        draw.text((x, y), text, fill=(255, 255, 255), font=font)
         image.save(image_path)
         data[i] = {
             'image': image_path,
