@@ -25,7 +25,7 @@ class Settings:
             'resolution': '720x1280',
             'fps': '24',
         }
-        self.config['Advanced Video'] {
+        self.config['Advanced Video'] = {
             'codec': 'libx264',
             'audio_codec': 'aac',
             'preset': 'ultrafast',
