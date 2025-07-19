@@ -1,7 +1,8 @@
 import src.text_to_speech.edge_tts_wrapper as edge
 
 class TTSWrapper:
-    def __init__(self, provider: str):
+    def __init__(self, settings):
+        provider = settings['TTS']['provider']
         if provider == 'edge':
             self.provider = edge
 
