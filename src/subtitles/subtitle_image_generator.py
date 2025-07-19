@@ -4,7 +4,9 @@ from PIL import Image, ImageDraw, ImageFont
 import json
 import os
 
-def generate_subtitle_images():
+def generate_subtitle_images(settings):
+    w, h = settings['Video']['res'].split('x')
+    w, h = int(w), int(h)
     data = {}
 
     with open('tts_output/transcript.srt', 'r') as f:
@@ -25,7 +27,7 @@ def generate_subtitle_images():
         # Insert transparent gap image if needed
         if sub.start > prev_end:
             gap_path = f'subtitle_images/subtitle_gap_{i}.png'
-            gap_img = Image.new('RGBA', (720, 1280), (0, 0, 0, 0))
+            gap_img = Image.new('RGBA', (w, h), (0, 0, 0, 0))
             gap_img.save(gap_path)
             data[i] = {
                 'image': gap_path,
